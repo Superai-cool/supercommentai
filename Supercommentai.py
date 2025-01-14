@@ -22,4 +22,36 @@ tone = st.selectbox("Comment Tone", ["Formal", "Professional", "Sarcasm", "Posit
 if tone == "Custom":
     tone = st.text_input("Custom Tone", placeholder="Enter custom tone")
 
-comment_length = st.selectbox("Comment Length", ["Short", "Long Note
+comment_length = st.selectbox("Comment Length", ["Short", "Long Note"])
+
+# Generate button
+if st.button("Generate Comment"):
+    if not content or not content_type or not writer or not tone:
+        st.error("Please fill in all fields before generating a comment.")
+    else:
+        try:
+            # Set max_tokens for better control of output
+            max_tokens = 120 if comment_length == "Short" else 300
+
+            # Fine-tuned prompt for complete comments
+            prompt = (
+                f"Write a {comment_length.lower()} and {tone.lower()} comment for a {content_type} written by {writer}. "
+                "The comment should be meaningful, engaging, and human-like. Acknowledge the post meaningfully, add value through a thoughtful insight or question. "
+                f"Post Content: {content}\nComment:"
+            )
+
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "You are an expert at crafting complete, concise, and human-like comments."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=max_tokens,
+                temperature=0.6
+            )
+            comment = response["choices"][0]["message"]["content"].strip()
+
+            st.success("Generated Comment:")
+            st.write(comment)
+        except Exception as e:
+            st.error(f"Error: {e}")
