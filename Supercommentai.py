@@ -28,13 +28,18 @@ if st.button("Generate Comment"):
         st.error("Please fill in all fields before generating a comment.")
     else:
         try:
-            response = openai.Completion.create(
-                engine="text-davinci-003",
-                prompt=f"Generate a {tone} comment for a {content_type} written by {writer}: {content}",
-                max_tokens=100,
-                temperature=0.7
+            # Use ChatGPT model (gpt-3.5-turbo or gpt-4)
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "You are an AI comment generator."},
+                    {
+                        "role": "user",
+                        "content": f"Generate a {tone} comment for a {content_type} written by {writer}: {content}"
+                    }
+                ]
             )
-            comment = response.choices[0].text.strip()
+            comment = response["choices"][0]["message"]["content"].strip()
             st.success("Generated Comment:")
             st.write(comment)
         except Exception as e:
