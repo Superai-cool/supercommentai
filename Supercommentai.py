@@ -22,24 +22,32 @@ tone = st.selectbox("Comment Tone", ["Formal", "Professional", "Sarcasm", "Posit
 if tone == "Custom":
     tone = st.text_input("Custom Tone", placeholder="Enter custom tone")
 
+comment_length = st.selectbox("Comment Length", ["Short", "Long Note"])
+
 # Generate button
 if st.button("Generate Comment"):
     if not content or not content_type or not writer or not tone:
         st.error("Please fill in all fields before generating a comment.")
     else:
         try:
+            max_tokens = 100 if comment_length == "Short" else 250
+
             # Use ChatGPT model (gpt-3.5-turbo or gpt-4)
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": "You are an AI comment generator."},
+                    {"role": "system", "content": "You are an AI comment generator. Keep responses concise and engaging."},
                     {
                         "role": "user",
-                        "content": f"Generate a {tone} comment for a {content_type} written by {writer}: {content}"
+                        "content": f"Generate a {tone} comment for a {content_type} written by {writer}. The comment should be {comment_length.lower()} and must not exceed 250 characters: {content}"
                     }
-                ]
+                ],
+                max_tokens=max_tokens,
+                temperature=0.7
             )
             comment = response["choices"][0]["message"]["content"].strip()
+            if len(comment) > 250:
+                comment = comment[:250] + "..."
             st.success("Generated Comment:")
             st.write(comment)
         except Exception as e:
