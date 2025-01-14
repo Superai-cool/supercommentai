@@ -10,11 +10,11 @@ st.subheader("Generate concise and engaging comments tailored to your needs")
 
 # Input fields
 content = st.text_area("Content", placeholder="Enter the content here...", height=150)
-content_type = st.selectbox("Content Type", ["LinkedIn Post", "Twitter Post", "Quora Post", "Google Review Post", "Zomato Review Post", "Custom"])
+content_type = st.selectbox("Content Type", ["LinkedIn Post", "E-commerce Product Review Post", "Google Review Post", "Zomato Review Post", "Custom"])
 if content_type == "Custom":
     content_type = st.text_input("Custom Content Type", placeholder="Enter custom content type")
 
-writer = st.selectbox("Who is Writing the Comment?", ["LinkedIn Profile Owner", "Quora Profile Owner", "Google Review Page Owner", "Restaurant Owner", "Custom"])
+writer = st.selectbox("Who is Writing the Comment?", ["LinkedIn Profile Owner", "E-commerce Product Owner", "Google Review Page Owner", "Restaurant Owner", "Custom"])
 if writer == "Custom":
     writer = st.text_input("Custom Writer", placeholder="Enter custom writer")
 
@@ -34,7 +34,7 @@ if st.button("Generate Comment"):
 
             # Use ChatGPT model (gpt-3.5-turbo or gpt-4)
             response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
+                model="gpt-4",
                 messages=[
                     {"role": "system", "content": "You are an AI comment generator. Keep responses concise, engaging, and within a comment-like format."},
                     {
