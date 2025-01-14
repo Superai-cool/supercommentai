@@ -5,7 +5,7 @@ import openai
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # App title
-st.title("AI Comment Generator")
+st.title("Supercomment.io")
 st.subheader("Generate concise and engaging comments tailored to your needs")
 
 # Input fields
