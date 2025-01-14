@@ -6,7 +6,7 @@ openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # App title
 st.title("Supercomment.io")
-st.subheader("Generate complete, concise, and engaging comments effortlessly")
+st.subheader("Generate concise, engaging, and human-like comments tailored to your needs")
 
 # Input fields
 content = st.text_area("Content", placeholder="Enter the content here...")
@@ -30,12 +30,31 @@ if st.button("Generate Comment"):
         st.error("Please fill in all fields before generating a comment.")
     else:
         try:
-            # Set max_tokens based on length
-            max_tokens = 100 if comment_length == "Short" else 200
+            max_tokens = 100 if comment_length == "Short" else 280
 
-            # Improved prompt for meaningful, complete comments
+            # Fine-tuned prompt for realistic and human-like comments
             prompt = (
                 f"Write a {comment_length.lower()} and {tone.lower()} comment for a {content_type} written by {writer}. "
-                "Make the comment meaningful, engaging, and complete, without exceeding the character limit. "
-                "Ensure the comment is natural and human-like, with any hashtags or additional elements fully included."
-                f"\nPo
+                f"The comment should be concise, engaging, and human-like. Acknowledge the post meaningfully, add value through a thoughtful insight or question, and keep it complete without exceeding {max_tokens} characters. "
+                f"Post Content: {content}\nComment:"
+            )
+
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "You are an expert at crafting human-like and engaging comments."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=max_tokens,
+                temperature=0.6  # Reduced temperature for more accurate and focused output
+            )
+            comment = response["choices"][0]["message"]["content"].strip()
+
+            # Truncate if necessary while maintaining completeness
+            if len(comment) > max_tokens:
+                comment = comment[:max_tokens].rsplit(" ", 1)[0] + "..."
+
+            st.success("Generated Comment:")
+            st.write(comment)
+        except Exception as e:
+            st.error(f"Error: {e}")
