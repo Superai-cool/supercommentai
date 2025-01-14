@@ -10,11 +10,11 @@ st.subheader("Generate concise and engaging comments tailored to your needs")
 
 # Input fields
 content = st.text_area("Content", placeholder="Enter the content here...", height=150)
-content_type = st.selectbox("Content Type", ["LinkedIn Post", "E-commerce Product Review Post", "Google Review Post", "Zomato Review Post", "Custom"])
+content_type = st.selectbox("Content Type", ["LinkedIn Post", "Twitter Post", "Quora Post", "Google Review Post", "Zomato Review Post", "Custom"])
 if content_type == "Custom":
     content_type = st.text_input("Custom Content Type", placeholder="Enter custom content type")
 
-writer = st.selectbox("Who is Writing the Comment?", ["LinkedIn Profile Owner", "E-commerce Product Owner", "Google Review Page Owner", "Restaurant Owner", "Custom"])
+writer = st.selectbox("Who is Writing the Comment?", ["LinkedIn Profile Owner", "Quora Profile Owner", "Google Review Page Owner", "Restaurant Owner", "Custom"])
 if writer == "Custom":
     writer = st.text_input("Custom Writer", placeholder="Enter custom writer")
 
@@ -33,14 +33,17 @@ if st.button("Generate Comment"):
             max_tokens = 100 if comment_length == "Short" else 200
 
             # Use ChatGPT model (gpt-3.5-turbo or gpt-4)
+            prompt = (
+                f"Write a {comment_length.lower()} and {tone.lower()} comment for a {content_type} written by {writer}. "
+                "The comment should acknowledge the content meaningfully, add value with a relevant thought or question, and be concise and engaging."
+                f"\nPost Content: {content}\nComment:"
+            )
+
             response = openai.ChatCompletion.create(
-                model="gpt-4",
+                model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": "You are an AI comment generator. Keep responses concise, engaging, and within a comment-like format."},
-                    {
-                        "role": "user",
-                        "content": f"Generate a {tone} comment for a {content_type} written by {writer}. The comment should be {comment_length.lower()} and not resemble an article or long post: {content}"
-                    }
+                    {"role": "system", "content": "You are an AI comment generator."},
+                    {"role": "user", "content": prompt}
                 ],
                 max_tokens=max_tokens,
                 temperature=0.7
