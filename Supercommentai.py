@@ -10,11 +10,11 @@ st.subheader("Generate concise and engaging comments tailored to your needs")
 
 # Input fields
 content = st.text_area("Content", placeholder="Enter the content here...", height=150)
-content_type = st.selectbox("Content Type", ["LinkedIn Post", "Twitter Post", "Quora Post", "Google Review Post", "Zomato Review Post", "Custom"])
+content_type = st.selectbox("Content Type", ["LinkedIn Post", "E-commerce Product Review Post", "Google Review Post", "Zomato Review Post", "Custom"])
 if content_type == "Custom":
     content_type = st.text_input("Custom Content Type", placeholder="Enter custom content type")
 
-writer = st.selectbox("Who is Writing the Comment?", ["LinkedIn Profile Owner", "Quora Profile Owner", "Google Review Page Owner", "Restaurant Owner", "Custom"])
+writer = st.selectbox("Who is Writing the Comment?", ["LinkedIn Profile Owner", "E-commerce Product Owner", "Google Review Page Owner", "Restaurant Owner", "Custom"])
 if writer == "Custom":
     writer = st.text_input("Custom Writer", placeholder="Enter custom writer")
 
@@ -31,7 +31,7 @@ if st.button("Generate Comment"):
     else:
         try:
             # Set maximum tokens based on comment length
-            max_tokens = 60 if comment_length == "Short" else 200
+            max_tokens = 40 if comment_length == "Short" else 62
 
             # Use ChatGPT model (gpt-3.5-turbo or gpt-4)
             response = openai.ChatCompletion.create(
@@ -48,7 +48,12 @@ if st.button("Generate Comment"):
             )
 
             comment = response["choices"][0]["message"]["content"].strip()
-            st.success("Generated Comment:")
-            st.write(comment)
+            if comment_length == "Short" and len(comment) > 160:
+                st.error("Generated comment exceeds 160 characters. Please try again.")
+            elif comment_length == "Long" and len(comment) > 250:
+                st.error("Generated comment exceeds 250 characters. Please try again.")
+            else:
+                st.success("Generated Comment:")
+                st.write(comment)
         except Exception as e:
             st.error(f"Error: {e}")
