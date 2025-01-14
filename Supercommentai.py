@@ -6,7 +6,7 @@ openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # App title
 st.title("Supercomment.io")
-st.subheader("Generate concise, engaging, and human-like comments tailored to your needs")
+st.subheader("Generate complete, concise, and engaging comments tailored to your needs")
 
 # Input fields
 content = st.text_area("Content", placeholder="Enter the content here...")
@@ -30,27 +30,28 @@ if st.button("Generate Comment"):
         st.error("Please fill in all fields before generating a comment.")
     else:
         try:
-            max_tokens = 100 if comment_length == "Short" else 280
+            max_tokens = 120 if comment_length == "Short" else 280
 
-            # Fine-tuned prompt for realistic and human-like comments
+            # Enhanced prompt for highly engaging comments
             prompt = (
-                f"Write a {comment_length.lower()} and {tone.lower()} comment for a {content_type} written by {writer}. "
-                f"The comment should be concise, engaging, and human-like. Acknowledge the post meaningfully, add value through a thoughtful insight or question, and keep it complete without exceeding {max_tokens} characters. "
+                f"Create a {comment_length.lower()} and {tone.lower()} comment for a {content_type} written by {writer}. "
+                "Ensure the comment is meaningful, engaging, and adds value. Provide thoughtful feedback or insights. "
+                f"The comment should fit within {max_tokens} characters and include hashtags if relevant. "
                 f"Post Content: {content}\nComment:"
             )
 
             response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
+                model="gpt-4",
                 messages=[
-                    {"role": "system", "content": "You are an expert at crafting human-like and engaging comments."},
+                    {"role": "system", "content": "You are an expert at writing complete, concise, and human-like comments."},
                     {"role": "user", "content": prompt}
                 ],
                 max_tokens=max_tokens,
-                temperature=0.6  # Reduced temperature for more accurate and focused output
+                temperature=0.5  # Lower temperature for more focused results
             )
             comment = response["choices"][0]["message"]["content"].strip()
 
-            # Truncate if necessary while maintaining completeness
+            # Validate and finalize the comment
             if len(comment) > max_tokens:
                 comment = comment[:max_tokens].rsplit(" ", 1)[0] + "..."
 
