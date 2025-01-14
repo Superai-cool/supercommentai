@@ -30,29 +30,25 @@ if st.button("Generate Comment"):
         st.error("Please fill in all fields before generating a comment.")
     else:
         try:
-            max_tokens = 100 if comment_length == "Short" else 280
+            max_tokens = 100 if comment_length == "Short" else 200
 
             # Use ChatGPT model (gpt-3.5-turbo or gpt-4)
             prompt = (
                 f"Write a {comment_length.lower()} and {tone.lower()} comment for a {content_type} written by {writer}. "
-                "The comment should acknowledge the content meaningfully, add value with a relevant thought or question, be concise, and stay within {max_tokens} characters."
-                f" Ensure the comment is complete and meaningful.\nPost Content: {content}\nComment:"
+                "The comment should acknowledge the content meaningfully, add value with a relevant thought or question, and be concise and engaging."
+                f"\nPost Content: {content}\nComment:"
             )
 
             response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": "You are an AI comment generator. Keep responses concise, complete, and meaningful."},
+                    {"role": "system", "content": "You are an AI comment generator."},
                     {"role": "user", "content": prompt}
                 ],
                 max_tokens=max_tokens,
                 temperature=0.7
             )
             comment = response["choices"][0]["message"]["content"].strip()
-
-            if len(comment) > max_tokens:
-                comment = comment[:max_tokens].rsplit(" ", 1)[0] + "..."
-
             st.success("Generated Comment:")
             st.write(comment)
         except Exception as e:
