@@ -40,7 +40,7 @@ if st.button("Generate Comment"):
             )
 
             response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
+                model="gpt-4",
                 messages=[
                     {"role": "system", "content": "You are an expert at crafting human-like and engaging comments."},
                     {"role": "user", "content": prompt}
