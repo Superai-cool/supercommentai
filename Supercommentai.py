@@ -30,29 +30,32 @@ if st.button("Generate Comment"):
         st.error("Please fill in all fields before generating a comment.")
     else:
         try:
+            # Set character limits
             max_tokens = 100 if comment_length == "Short" else 280
 
-            # Fine-tuned prompt for realistic and human-like comments
+            # Improved prompt with focus on completeness and clarity
             prompt = (
                 f"Write a {comment_length.lower()} and {tone.lower()} comment for a {content_type} written by {writer}. "
-                "The comment should be concise, engaging, and human-like. Acknowledge the post meaningfully, add value through a thoughtful insight or question, and keep it complete without exceeding {max_tokens} characters."
-                f"\nPost Content: {content}\nComment:"
+                "The comment must be meaningful, complete, and engaging while acknowledging the post content effectively. "
+                "Add value through thoughtful insight or a relevant question, and ensure the comment stays concise and human-like. "
+                f"Limit the comment to a maximum of {max_tokens} characters. Post Content: {content}\nComment:"
             )
 
             response = openai.ChatCompletion.create(
-                model="gpt-4o",
+                model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": "You are an expert at crafting human-like and engaging comments."},
+                    {"role": "system", "content": "You are an expert at crafting human-like, concise, and engaging comments that are meaningful and complete."},
                     {"role": "user", "content": prompt}
                 ],
                 max_tokens=max_tokens,
-                temperature=0.6  # Reduced temperature for more accurate and focused output
+                temperature=0.7  # Balanced creativity and accuracy
             )
             comment = response["choices"][0]["message"]["content"].strip()
 
-            # Truncate if necessary while maintaining completeness
+            # Ensure no truncation and check for completeness
             if len(comment) > max_tokens:
                 comment = comment[:max_tokens].rsplit(" ", 1)[0] + "..."
+                st.warning("Comment was slightly truncated to meet the length limit.")
 
             st.success("Generated Comment:")
             st.write(comment)
