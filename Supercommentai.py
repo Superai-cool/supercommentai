@@ -1,12 +1,19 @@
 import streamlit as st
-import openai
+from openai import OpenAI
 
-# Set up OpenAI API key
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+# Sidebar for OpenAI API Key
+with st.sidebar:
+    openai_api_key = st.text_input("OpenAI API Key", key="supercommentai_api_key", type="password")
+    "[Get an OpenAI API key](https://platform.openai.com/account/api-keys)"
+    "[View the source code](https://github.com/streamlit/llm-examples)"
 
 # App title
 st.title("Supercomment.io")
-st.subheader("Generate concise, engaging, and human-like comments tailored to your needs")
+st.caption("🚀 Generate concise, engaging, and human-like comments tailored to your needs")
+
+# Initialize session state for storing messages
+if "comments" not in st.session_state:
+    st.session_state["comments"] = []
 
 # Input fields
 content = st.text_area("Content", placeholder="Enter the content here...")
@@ -25,7 +32,11 @@ if tone == "Custom":
 comment_length = st.selectbox("Comment Length", ["Short", "Long Note"])
 
 # Generate button
-if st.button("Generate Comment"):
+if prompt := st.chat_input():
+    if not openai_api_key:
+        st.info("Please add your OpenAI API key to continue.")
+        st.stop()
+
     if not content or not content_type or not writer or not tone:
         st.error("Please fill in all fields before generating a comment.")
     else:
@@ -40,7 +51,8 @@ if st.button("Generate Comment"):
                 f"Post Content: {content}\nComment:"
             )
 
-            response = openai.ChatCompletion.create(
+            client = OpenAI(api_key=openai_api_key)
+            response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": "You are an expert at crafting complete, concise, and human-like comments."},
@@ -49,9 +61,15 @@ if st.button("Generate Comment"):
                 max_tokens=max_tokens,
                 temperature=0.6
             )
-            comment = response["choices"][0]["message"]["content"].strip()
+
+            comment = response.choices[0].message.content.strip()
+            st.session_state["comments"].append({"role": "assistant", "content": comment})
 
             st.success("Generated Comment:")
             st.write(comment)
         except Exception as e:
             st.error(f"Error: {e}")
+
+# Display previous comments
+for msg in st.session_state["comments"]:
+    st.chat_message(msg["role"]).write(msg["content"])
