@@ -73,6 +73,3 @@ if st.button("Generate Comment"):
         except Exception as e:
             st.error(f"Error: {e}")
 
-# Display previous comments
-for msg in st.session_state["comments"]:
-    st.chat_message(msg["role"]).write(msg["content"])
