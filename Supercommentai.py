@@ -16,19 +16,17 @@ if "comments" not in st.session_state:
 
 # Input fields
 content = st.text_area("Content", placeholder="Enter the content here...")
-content_type = st.selectbox("Content Type", ["LinkedIn Post", "Google Review Post", "Zomato Review Post", "Custom"])
+content_type = st.selectbox("Content Type", ["LinkedIn Post", "Twitter Post", "Quora Post", "Google Review Post", "Zomato Review Post", "Custom"])
 if content_type == "Custom":
     content_type = st.text_input("Custom Content Type", placeholder="Enter custom content type")
 
-writer = st.selectbox("Who is Writing the Comment?", ["LinkedIn Profile Owner", "Google Review Page Owner", "Restaurant Owner", "Custom"])
+writer = st.selectbox("Who is Writing the Comment?", ["LinkedIn Profile Owner", "Quora Profile Owner", "Google Review Page Owner", "Restaurant Owner", "Custom"])
 if writer == "Custom":
     writer = st.text_input("Custom Writer", placeholder="Enter custom writer")
 
 tone = st.selectbox("Comment Tone", ["Formal", "Professional", "Sarcasm", "Positive", "Conversation Starter Style", "Funny", "Custom"])
 if tone == "Custom":
     tone = st.text_input("Custom Tone", placeholder="Enter custom tone")
-
-comment_length = st.selectbox("Comment Length", ["Short", "Long Note"])
 
 # Generate button
 if st.button("Generate Comment"):
@@ -41,11 +39,11 @@ if st.button("Generate Comment"):
     else:
         try:
             # Set max_tokens for better control of output
-            max_tokens = 120 if comment_length == "Short" else 300
+            max_tokens = 300
 
             # Fine-tuned prompt for complete comments
             prompt = (
-                f"Write a {comment_length.lower()} and {tone.lower()} comment for a {content_type} written by {writer}. "
+                f"Write a concise and {tone.lower()} comment for a {content_type} written by {writer}. "
                 "The comment should be meaningful, engaging, and human-like. Acknowledge the post meaningfully, add value through a thoughtful insight or question. "
                 f"Post Content: {content}\nComment:"
             )
