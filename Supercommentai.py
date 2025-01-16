@@ -1,5 +1,5 @@
 import streamlit as st
-from openai import OpenAI
+import openai
 
 # Sidebar for OpenAI API Key
 with st.sidebar:
@@ -32,7 +32,7 @@ if tone == "Custom":
 comment_length = st.selectbox("Comment Length", ["Short", "Long Note"])
 
 # Generate button
-if prompt := st.chat_input():
+if st.button("Generate Comment"):
     if not openai_api_key:
         st.info("Please add your OpenAI API key to continue.")
         st.stop()
@@ -51,8 +51,7 @@ if prompt := st.chat_input():
                 f"Post Content: {content}\nComment:"
             )
 
-            client = OpenAI(api_key=openai_api_key)
-            response = client.chat.completions.create(
+            response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": "You are an expert at crafting complete, concise, and human-like comments."},
