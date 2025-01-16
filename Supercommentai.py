@@ -59,6 +59,13 @@ if st.button("Generate Comment"):
             )
 
             comment = response.choices[0].message.content.strip()
+
+            # Ensure comments follow the specified ending rule
+            if tone.lower() == "conversation starter style" and not comment.endswith("?"):
+                comment = comment.rstrip(".") + "?"
+            elif tone.lower() != "conversation starter style" and comment.endswith("?"):
+                comment = comment.rstrip("?") + "."
+
             st.session_state["comments"].append({"role": "assistant", "content": comment})
 
             st.success("Generated Comment:")
